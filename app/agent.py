@@ -1,6 +1,7 @@
 from google.adk.agents import Agent
 import requests
 import json
+from typing import Any, Dict, List, Optional
 
 #1. Basic Agent
 base_agent = Agent(
@@ -12,11 +13,9 @@ base_agent = Agent(
 
 
 # 2. Basic Agent with Tool
-from google.adk.agents import Agent
-
 BASE_URL = "https://api.restful-api.dev/objects"
 
-def get_all_objects():
+def get_all_objects() -> Optional[List[Dict[str, Any]]]:
     """
     Consumes GET List of all objects: https://api.restful-api.dev/objects
     """
@@ -31,7 +30,7 @@ def get_all_objects():
         print(f"Error fetching all objects: {e}")
         return None
 
-def get_objects_by_ids(ids):
+def get_objects_by_ids(ids: List[int]) -> Optional[List[Dict[str, Any]]]:
     """
     Consumes GET List of objects by ids: https://api.restful-api.dev/objects?id=3&id=5&id=10
     Args:
@@ -49,11 +48,11 @@ def get_objects_by_ids(ids):
         print(f"Error fetching objects by IDs: {e}")
         return None
 
-def get_single_object(object_id):
+def get_single_object(object_id: str) -> Optional[Dict[str, Any]]:
     """
     Consumes GET Single object: https://api.restful-api.dev/objects/7
     Args:
-        object_id (int): The ID of the object to retrieve.
+        object_id (str): The ID of the object to retrieve.
     """
     print(f"\n--- GET Single Object: {object_id} ---")
     url = f"{BASE_URL}/{object_id}"
@@ -67,7 +66,7 @@ def get_single_object(object_id):
         print(f"Error fetching single object {object_id}: {e}")
         return None
 
-def add_object(name, data_payload):
+def add_object(name: str, data_payload: Dict[str, Any]) -> Optional[Dict[str, Any]]:
     """
     Consumes POST Add object: https://api.restful-api.dev/objects
     Args:
@@ -90,11 +89,11 @@ def add_object(name, data_payload):
         print(f"Error adding object: {e}")
         return None
 
-def update_object(object_id, name, data_payload):
+def update_object(object_id: str, name: str, data_payload: Dict[str, Any]) -> Optional[Dict[str, Any]]:
     """
     Consumes PUT Update object: https://api.restful-api.dev/objects/7
     Args:
-        object_id (int): The ID of the object to update.
+        object_id (str): The ID of the object to update.
         name (str): The new name for the object.
         data_payload (dict): The new 'data' field for the object.
     """
@@ -115,11 +114,11 @@ def update_object(object_id, name, data_payload):
         print(f"Error updating object {object_id}: {e}")
         return None
 
-def partially_update_object(object_id, data_to_update):
+def partially_update_object(object_id: str, data_to_update: Dict[str, Any]) -> Optional[Dict[str, Any]]:
     """
     Consumes PATCH Partially update object: https://api.restful-api.dev/objects/7
     Args:
-        object_id (int): The ID of the object to partially update.
+        object_id (str): The ID of the object to partially update.
         data_to_update (dict): A dictionary containing the fields to update (e.g., {"name": "New Name"}).
     """
     print(f"\n--- PATCH Partially Update Object: {object_id} ---")
@@ -135,11 +134,11 @@ def partially_update_object(object_id, data_to_update):
         print(f"Error partially updating object {object_id}: {e}")
         return None
 
-def delete_object(object_id):
+def delete_object(object_id: str) -> Optional[Dict[str, Any]]:
     """
     Consumes DELETE object: https://api.restful-api.dev/objects/6
     Args:
-        object_id (int): The ID of the object to delete.
+        object_id (str): The ID of the object to delete.
     """
     print(f"\n--- DELETE Object: {object_id} ---")
     url = f"{BASE_URL}/{object_id}"
@@ -158,12 +157,20 @@ def delete_object(object_id):
 
 tool_agent = Agent(
     name="tool_agent",
-    model="gemini-2.0-flash",
-    description="A simple agent that gets stock prices",
+    model="gemini-2.0-flash-001",
+    description="An agent that can interact with a RESTful API for objects",
     instruction="""
-    You are a RestAPI service caller assistant. Call the given tool for getting List of all objects and print the data in json format.
+    You are a RestAPI service caller assistant. Call the given tools as per the instruction given by the uses and print the data in json format.
     """,
-    tools=[get_all_objects],
+    tools=[
+        get_all_objects,
+        get_objects_by_ids,
+        get_single_object,
+        add_object,
+        update_object,
+        partially_update_object,
+        delete_object,
+    ],
 )
 
 
