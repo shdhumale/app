@@ -5,7 +5,7 @@ This app contains google adk agent with different flavour
 ```markdown
 # Google ADK Agent App
 
-This repository contains a Google Accessory Development Kit (ADK) agent implemented in various configurations or "flavours." It is intended for developers working with Android Open Accessory (AOA) protocols and hardware integration.
+This repository contains a Google Accessory Development Kit (ADK) agent implemented in various configurations or "flavours." 
 
 ## 🚀 Features
 
@@ -17,19 +17,16 @@ This repository contains a Google Accessory Development Kit (ADK) agent implemen
 
 ```
 app/
-├── flavour1/
-├── flavour2/
-├── common/
+├── __init__.py
+├── .env
+├── agent.py
 └── README.md
 ```
 
-> Note: The actual structure may vary. Please explore the folders for specific implementations.
 
 ## 🛠️ Requirements
 
-- Java 8+
-- Android SDK (if applicable)
-- Gradle (if using Android Studio)
+- python above 3
 
 ## 🧪 Getting Started
 
@@ -46,7 +43,6 @@ app/
 ## 📚 Resources
 
 - Google ADK Documentation
-- AOA Protocol Overview
 
 ## 👨‍💻 Author
 
