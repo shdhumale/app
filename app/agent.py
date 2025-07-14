@@ -12,7 +12,8 @@ base_agent = Agent(
 )
 
 
-# 2. Basic Agent with Tool
+# 2. Basic Agent with Tool and Multi-Tool Agent for calling RESTAPI
+
 BASE_URL = "https://api.restful-api.dev/objects"
 
 def get_all_objects() -> Optional[List[Dict[str, Any]]]:
@@ -174,4 +175,160 @@ tool_agent = Agent(
 )
 
 
-root_agent=tool_agent
+
+
+
+# 3. Agent with State
+from google.adk.agents import Agent
+from google.adk.tools.tool_context import ToolContext
+
+
+
+def get_single_object(object_id: str , tool_context: ToolContext) -> Optional[Dict[str, Any]]:
+    """
+    Consumes GET Single object: https://api.restful-api.dev/objects/7
+    Args:
+        object_id (str): The ID of the object to retrieve.
+    """
+    print(f"\n--- GET Single Object: {object_id} ---")
+    url = f"{BASE_URL}/{object_id}"
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        data = response.json()
+        print(json.dumps(data, indent=2))
+        # Initialize recent_searches if it doesn't exist
+        if "recent_searches" not in tool_context.state:
+            tool_context.state["recent_searches"] = []
+            
+        recent_searches = tool_context.state["recent_searches"]
+        if object_id not in recent_searches:
+            recent_searches.append(object_id)
+            tool_context.state["recent_searches"] = recent_searches   
+            #print  tool_context.state["recent_searches"]
+            print('tool_context.state["recent_searches"] ------------------------->',tool_context.state["recent_searches"]) 
+            
+        return data
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching single object {object_id}: {e}")
+        return None
+    
+stateful_agent = Agent(
+    name="stateful_agent",
+    model="gemini-2.0-flash-001",
+    description="An agent that can interact with a RESTful API for objects",
+    instruction="""
+    You are a RestAPI service caller assistant. Call the given tools as per the instruction given by the uses and print the data in json format.
+    """,
+    tools=[
+        get_single_object,        
+    ],
+)
+
+
+#4. Structured Output Agent
+from google.adk.agents import LlmAgent
+from pydantic import BaseModel, Field
+
+
+
+class MobileType(BaseModel):
+    mobileType: str = Field(description="Name of the mobile")
+    manufactureCompanyName: str = Field(description="Name of the Company that manufacture that mobile")
+
+# Define a function to get value of the objet id enter by the user
+def get_single_object(object_id: str , tool_context: ToolContext) -> Optional[Dict[str, Any]]:
+    """
+    Consumes GET Single object: https://api.restful-api.dev/objects/{object_id}
+    Args:
+        object_id (str): The ID of the object to retrieve.
+    """
+    print(f"\n--- GET Single Object: {object_id} ---")
+    url = f"{BASE_URL}/{object_id}"
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        data = response.json()
+        print(json.dumps(data, indent=2))        
+        return data
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching single object {object_id}: {e}")
+        return None
+
+structured_agent = LlmAgent(
+    name="structured_agent",
+    model="gemini-2.0-flash-001",
+    description="An agent that can interact with a RESTful API for given objects id and can provide structured output",
+    instruction="""
+    You are a RestAPI service caller assistant. Call the given tools as per the instruction given by the user and print the data in json format.
+    Return Name of the Company that manufacture that mobile in JSON format.
+    
+    For each object_id, look at the name to make a decision.
+    If name contains Google return Name of the Company that manufacture that mobile as Google else if name contains Apple return Name of the Company that manufacture that mobile return Apple
+    Otherwise: name
+    """,
+    output_schema=MobileType,
+    output_key="mobile_company_name"
+)
+
+
+# 6. Callback Agent
+from google.adk.agents import Agent
+from google.adk.tools.tool_context import ToolContext
+from google.adk.tools.base_tool import BaseTool
+from typing import Dict, Any, Optional
+
+# Define a function to get value of the objet id enter by the user
+def get_single_object(object_id: str , tool_context: ToolContext) -> Optional[Dict[str, Any]]:
+    """
+    Consumes GET Single object: https://api.restful-api.dev/objects/{object_id}
+    Args:
+        object_id (str): The ID of the object to retrieve.
+    """
+    print(f"\n--- GET Single Object: {object_id} ---")
+    url = f"{BASE_URL}/{object_id}"
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        data = response.json()
+        print(json.dumps(data, indent=2))        
+        return data
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching single object {object_id}: {e}")
+        return None
+
+def before_tool_callback(tool: BaseTool, args: Dict[str, Any], tool_context: ToolContext) -> Optional[Dict]:
+    # Initialize tool_usage if it doesn't exist
+    if "tool_usage" not in tool_context.state:
+        tool_context.state["tool_usage"] = {}
+        
+    # Track tool usage count
+    tool_usage = tool_context.state["tool_usage"]
+    tool_name = tool.name
+    tool_usage[tool_name] = tool_usage.get(tool_name, 0) + 1
+    tool_context.state["tool_usage"] = tool_usage
+    
+    print(f"[LOG] Running tool: {tool_name}")
+    return None
+
+def after_tool_callback(tool: BaseTool, args: Dict[str, Any], tool_context: ToolContext, tool_response: Dict) -> Optional[Dict]:
+    print(f"[LOG] Tool {tool.name} completed")
+    return None
+
+# Initialize state before creating the agent
+initial_state = {"tool_usage": {}}
+
+callback_agent = Agent(
+     name="callback_agent",
+    model="gemini-2.0-flash-001",
+    description="An agent that can interact with a RESTful API for objects",
+    instruction="""
+    You are a RestAPI service caller assistant. Call the given tools as per the instruction given by the uses and print the data in json format.
+    """,
+    tools=[get_single_object],
+    before_tool_callback=before_tool_callback,
+    after_tool_callback=after_tool_callback,
+)
+
+# Choose which agent to run
+root_agent = callback_agent
