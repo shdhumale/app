@@ -1,0 +1,26 @@
+
+(.venv) C:\vscode-python-workspace\adkagent>python weatherSessionExample.py
+Greeting and Farewell tools defined.
+--- Tool: say_hello called with name: Alice ---
+Hello, Alice!
+--- Tool: say_hello called without a specific name (name_arg_value: None) ---
+Hello there!
+--- Tool: say_hello called without a specific name (name_arg_value: None) ---
+Hello there!
+✅ State-aware 'get_weather_stateful' tool defined.
+✅ Agent 'greeting_agent' redefined.
+✅ Agent 'farewell_agent' redefined.
+✅ Root Agent 'weather_agent_v4_stateful' created using stateful tool and output_key.
+✅ New InMemorySessionService created for state demonstration.
+✅ Session 'session_state_demo_001' created for user 'user_state_demo'.
+
+--- Initial Session State ---
+{'user_preference_temperature_unit': 'Celsius'}
+✅ Runner created for stateful root agent 'weather_agent_v4_stateful' using stateful session service.
+--- Tool: get_weather_stateful called for newyork ---
+--- Tool: Reading state 'user_preference_temperature_unit': Fahrenheit ---
+--- Tool: Generated report in Fahrenheit. Result: {'status': 'success', 'report': 'The weather in Newyork is sunny wit
+h a temperature of 77°F.'} ---
+--- Tool: Updated state 'last_city_checked_stateful': newyork ---
+
+(.venv) C:\vscode-python-workspace\adkagent>
