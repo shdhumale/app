@@ -1,0 +1,50 @@
+(.venv) C:\vscode-python-workspace\adkagent>python weatherExample.py
+Greeting and Farewell tools defined.
+--- Tool: say_hello called with name: Alice ---
+Hello, Alice!
+--- Tool: say_hello called without a specific name (name_arg_value: None) ---
+Hello there!
+--- Tool: say_hello called without a specific name (name_arg_value: None) ---
+Hello there!
+✅ Agent 'greeting_agent' created using model 'gemini-2.0-flash-001'.
+✅ Agent 'farewell_agent' created using model 'gemini-2.0-flash-001'.
+--- Tool: get_weather called for city: New York ---
+{'status': 'success', 'report': 'The weather in New York is sunny with a temperature of 25°C.'}
+--- Tool: get_weather called for city: Paris ---
+{'status': 'error', 'error_message': "Sorry, I don't have weather information for 'Paris'."}
+✅ Root Agent 'weather_agent_v2' created using model 'gemini-2.0-flash-001' with sub-agents: ['greeting_agent',
+ 'farewell_agent']
+Executing using 'asyncio.run()' (for standard Python scripts)...
+
+--- Testing Agent Team Delegation ---
+Session created: App='weather_tutorial_agent_team', User='user_1_agent_team', Session='session_001_agent_team'
+Runner created for agent 'weather_agent_v2'.
+
+>>> User Query: Hello there!
+Warning: there are non-text parts in the response: ['function_call'], returning concatenated text result from t
+ext parts. Check the full candidates.content.parts accessor to get the full model response.
+Warning: there are non-text parts in the response: ['function_call'], returning concatenated text result from t
+ext parts. Check the full candidates.content.parts accessor to get the full model response.
+--- Tool: say_hello called without a specific name (name_arg_value: None) ---
+<<< Agent Response: Hello there!
+
+
+>>> User Query: What is the weather in New York?
+Warning: there are non-text parts in the response: ['function_call'], returning concatenated text result from t
+ext parts. Check the full candidates.content.parts accessor to get the full model response.
+Warning: there are non-text parts in the response: ['function_call'], returning concatenated text result from t
+ext parts. Check the full candidates.content.parts accessor to get the full model response.
+--- Tool: get_weather called for city: New York ---
+<<< Agent Response: The weather in New York is sunny with a temperature of 25°C.
+
+
+>>> User Query: Thanks, bye!
+Warning: there are non-text parts in the response: ['function_call'], returning concatenated text result from t
+ext parts. Check the full candidates.content.parts accessor to get the full model response.
+Warning: there are non-text parts in the response: ['function_call'], returning concatenated text result from t
+ext parts. Check the full candidates.content.parts accessor to get the full model response.
+--- Tool: say_goodbye called ---
+<<< Agent Response: Goodbye! Have a great day.
+
+
+(.venv) C:\vscode-python-workspace\adkagent>
