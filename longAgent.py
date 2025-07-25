@@ -18,6 +18,9 @@ def ordinaryfuction():
     print("ordinaryfuction called >>>>>>>>>>>>>>>>>>>>>")
     return "ordinaryfuction called >>>>>>>>>>>>>>>>>>>>>"
 
+def afterTaskCompletedfuction():
+    print("afterTaskCompletedfuction called >>>>>>>>>>>>>>>>>>>>>")
+    
 
 # 2️⃣ Wrap it using LongRunningFunctionTool
 long_running_tool = LongRunningFunctionTool(func=long_running_function)
@@ -30,7 +33,7 @@ agent = Agent(
     instruction=(
         "You are a long running agent. "        
     ),
-    tools=[long_running_tool,ordinaryfuction]
+    tools=[long_running_tool,ordinaryfuction,afterTaskCompletedfuction]
 )
 
 APP_NAME = "file_processor_agent"
@@ -58,4 +61,4 @@ async def call_agent(query):
 
 
 if __name__ == "__main__":
-    asyncio.run(call_agent("if long_running_function is taking long time to execute till then reply using tool ordinaryfuction and when long_running_function completed say Task is completed from my side"))
+    asyncio.run(call_agent("if long_running_function is taking long time to execute till then reply using tool ordinaryfuction and when long_running_function completed execute afterTaskCompletedfuction"))

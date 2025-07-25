@@ -1,15 +1,16 @@
 (.venv) C:\vscode-python-workspace\adkagent>python longAgent.py
-Warning: there are non-text parts in the response: ['function_call'], returning concatenated text result from text par
-ts. Check the full candidates.content.parts accessor to get the full model response.
-ordinaryfuction called >>>>>>>>>>>>>>>>>>>>>
-Warning: there are non-text parts in the response: ['function_call'], returning concatenated text result from text par
-ts. Check the full candidates.content.parts accessor to get the full model response.
-[file_processor_agent]: I have called the ordinary function. I will let you know when the long-running function is com
-plete.
+Warning: there are non-text parts in the response: ['function_call', 'function_call', 'function_call'], returning conc
+atenated text result from text parts. Check the full candidates.content.parts accessor to get the full model response.
 
+ordinaryfuction called >>>>>>>>>>>>>>>>>>>>>
 Long-running function: Task started
 Long-running function: Task completed
-[file_processor_agent]: Task is completed from my side.
+afterTaskCompletedfuction called >>>>>>>>>>>>>>>>>>>>>
+[file_processor_agent]: Okay, I have executed the functions in the order you requested. First, I called `ordinaryfucti
+on` and received the response `{"ordinaryfuction_response": {"result": "ordinaryfuction called >>>>>>>>>>>>>>>>>>>>>"}
+}`. Then, I called `long_running_function` and waited for it to complete, after which I received the response `{"long_
+running_function_response": {"result": "long_running_function completed"}}`. Finally, I executed `afterTaskCompletedfu
+ction` and received the response `{"afterTaskCompletedfuction_response": {"result": None}}`.
 
 
 (.venv) C:\vscode-python-workspace\adkagent>
