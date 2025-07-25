@@ -1,0 +1,15 @@
+(.venv) C:\vscode-python-workspace\adkagent>python longAgent.py
+Warning: there are non-text parts in the response: ['function_call'], returning concatenated text result from text par
+ts. Check the full candidates.content.parts accessor to get the full model response.
+ordinaryfuction called >>>>>>>>>>>>>>>>>>>>>
+Warning: there are non-text parts in the response: ['function_call'], returning concatenated text result from text par
+ts. Check the full candidates.content.parts accessor to get the full model response.
+[file_processor_agent]: I have called the ordinary function. I will let you know when the long-running function is com
+plete.
+
+Long-running function: Task started
+Long-running function: Task completed
+[file_processor_agent]: Task is completed from my side.
+
+
+(.venv) C:\vscode-python-workspace\adkagent>
