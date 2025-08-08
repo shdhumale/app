@@ -1,0 +1,31 @@
+(.venv) C:\vscode-python-workspace\adkagent>python connetSSEMCPServer.py
+Warning: there are non-text parts in the response: ['function_call'], returning concatenated text result from t
+ext parts. Check the full candidates.content.parts accessor to get the full model response.
+Tool 'get_mcp_data' called with object_id: 2
+Fetched single: CallToolResult(content=[TextContent(type='text', text='{\n  "id": "2",\n  "name": "Apple iPhone
+ 12 Mini, 256GB, Blue",\n  "data": null\n}', annotations=None, meta=None)], structured_content=None, data=None,
+ is_error=False)
+Potential final response from [assistant]: OK. I have fetched the data for object_id 2. Here is the content:
+
+```
+{
+  "id": "2",
+  "name": "Apple iPhone 12 Mini, 256GB, Blue",
+  "data": null
+}
+```
+
+
+--- Script Finished ---
+Final returned value: OK. I have fetched the data for object_id 2. Here is the content:
+
+```
+{
+  "id": "2",
+  "name": "Apple iPhone 12 Mini, 256GB, Blue",
+  "data": null
+}
+```
+
+
+(.venv) C:\vscode-python-workspace\adkagent>
