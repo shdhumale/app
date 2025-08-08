@@ -839,4 +839,82 @@ call_mcp_server_agent = LlmAgent(
 )
     
  
-root_agent=call_mcp_server_agent    
+#root_agent=call_mcp_server_agent    
+
+#connecting local MCP
+
+import os
+from google.adk.agents import LlmAgent
+from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset, StdioServerParameters
+
+# Example: Define a command to run a local MCP server.
+# In this case, we're assuming there's a script 'mcp_server.py'
+# that you can run with a Python interpreter.
+server_command = 'python'
+server_args = ['my_server.py']
+
+# Define the connection parameters for the stdio server.
+stdio_connection_params = StdioServerParameters(
+    command=server_command,
+    args=server_args
+)
+
+# Create an MCPToolset instance with the stdio connection parameters.
+# The toolset will handle the connection and tool discovery.
+mcp_toolset = MCPToolset(
+    connection_params=stdio_connection_params
+)
+
+# Initialize your LlmAgent and provide the MCPToolset as a tool.
+# This makes the tools from the MCP server available to the agent.
+my_agent = LlmAgent(
+    model='gemini-2.0-flash',  # Specify the model you want to use
+    name='my_mcp_agent',
+    instruction='I am a helpful agent that can use the tools from my MCP server.',
+    tools=[mcp_toolset]
+)
+
+# You can now use this 'my_agent' in your application with the Runner.
+# The Runner will manage the lifecycle of the agent and its tools.
+
+#Connecting local MCP server
+import warnings
+warnings.filterwarnings(
+    "ignore",
+    message='Field name "config_type" in "SequentialAgent" shadows an attribute in parent "BaseAgent"',
+    category=UserWarning,
+    module="pydantic._internal._fields"
+)
+import asyncio
+from fastmcp import Client
+from typing import Any
+from google.genai import types
+from dotenv import load_dotenv
+
+from google.adk.agents import LlmAgent
+from pydantic import BaseModel, Field
+
+from google.adk.agents import Agent
+from google.adk.events import Event
+from google.adk.runners import Runner
+from google.adk.sessions import InMemorySessionService
+
+async def get_mcp_data(object_id: str) -> dict:
+    """Fetches an object by its ID from the MCP server."""
+    print(f"Tool 'get_mcp_data' called with object_id: {object_id}")
+    async with Client("restapi-mcp-server.py") as client:
+        single = await client.call_tool("get_object_by_id", {"object_id": object_id})
+        print("Fetched single:", single)
+        return single
+        
+call_local_mcp_server_agent = LlmAgent(
+    model="gemini-2.0-flash",
+    name="assistant",
+    description="This agent is used to get data using FASTMCP client by calling the FASTMCP server ",
+    instruction="""Help user to fetch the data from the FASTMCP Server using FASTMCP Client.
+    When the user asks to fetch data for a specific object ID, use the `get_mcp_data` tool and pass the ID to it.
+    """,
+    tools=[get_mcp_data],
+)
+
+root_agent=call_local_mcp_server_agent
