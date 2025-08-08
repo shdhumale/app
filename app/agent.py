@@ -175,7 +175,7 @@ tool_agent = Agent(
     ],
 )
 
-
+#root_agent=tool_agent    
 
 
 
@@ -774,4 +774,69 @@ refinement_loop = LoopAgent(
 # Loop runs: Refiner -> Checker -> StopChecker
 # State['current_code'] is updated each iteration.
 # Loop stops if QualityChecker outputs 'pass' (leading to StopChecker escalating) or after 5 iterations.
-root_agent=refinement_loop
+#root_agent=refinement_loop
+
+from google.adk.agents import Agent
+from google.adk.tools import google_search  # Import the tool
+
+stream_agent = Agent(
+   # A unique name for the agent.
+   name="basic_search_agent",
+   # The Large Language Model (LLM) that agent will use.
+   # Please fill in the latest model id that supports live from
+   # https://google.github.io/adk-docs/get-started/streaming/quickstart-streaming/#supported-models
+   model="gemini-2.0-flash-exp",  # for example: model="gemini-2.0-flash-live-001" or model="gemini-2.0-flash-live-preview-04-09" or "gemini-2.0-flash-001"
+   # A short description of the agent's purpose.
+   description="Agent to answer questions using Google Search.",
+   # Instructions to set the agent's behavior.
+   instruction="You are an expert researcher. You always stick to the facts.",
+   # Add google_search tool to perform grounding with Google search.
+   tools=[google_search]
+)
+
+
+#root_agent=stream_agent
+
+#Connecting External MCPServer
+
+import warnings
+warnings.filterwarnings(
+    "ignore",
+    message='Field name "config_type" in "SequentialAgent" shadows an attribute in parent "BaseAgent"',
+    category=UserWarning,
+    module="pydantic._internal._fields"
+)
+import asyncio
+from fastmcp import Client
+from typing import Any
+from google.genai import types
+from dotenv import load_dotenv
+
+from google.adk.agents import LlmAgent
+from pydantic import BaseModel, Field
+
+from google.adk.agents import Agent
+from google.adk.events import Event
+from google.adk.runners import Runner
+from google.adk.sessions import InMemorySessionService
+
+async def get_mcp_data(object_id: str) -> dict:
+    """Fetches an object by its ID from the MCP server."""
+    print(f"Tool 'get_mcp_data' called with object_id: {object_id}")
+    async with Client("http://127.0.0.1:8001/mcp") as client:
+        single = await client.call_tool("get_object_by_id", {"object_id": object_id})
+        print("Fetched single:", single)
+        return single
+        
+call_mcp_server_agent = LlmAgent(
+    model="gemini-2.0-flash",
+    name="assistant",
+    description="This agent is used to get data using FASTMCP client by calling the FASTMCP server ",
+    instruction="""Help user to fetch the data from the FASTMCP Server using FASTMCP Client.
+    When the user asks to fetch data for a specific object ID, use the `get_mcp_data` tool and pass the ID to it.
+    """,
+    tools=[get_mcp_data],
+)
+    
+ 
+root_agent=call_mcp_server_agent    
