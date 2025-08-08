@@ -35,6 +35,106 @@ warnings.filterwarnings(
 # if __name__ == "__main__":
 #     agent.run()
 
+##Wrong code start
+# from google_adk.llm_agent import LlmAgent
+# from google_adk.mcp.toolset import MCPToolset
+# from google_adk.mcp.server_parameters import StdioServerParameters # or SseServerParams for remote
+ 
+# # Configure the connection to your MCP server
+# server_params = StdioServerParameters(
+#   command=["python", "local_mcp/server.py"], # Replace with your server command
+#   # ... other parameters like arguments, etc.
+# )
+ 
+# # Initialize the MCPToolset
+# mcp_toolset = MCPToolset(server_parameters=server_params)
+ 
+# # Initialize the LlmAgent, passing in the toolset
+# llm_agent = LlmAgent(
+#   mcp_toolset=mcp_toolset,
+#   # ... other agent configurations like LLM, prompt, etc.
+# )
+ 
+# # Now you can use the agent, and it will automatically use the connected tools!
+ 
+ 
+# =========================
+ 
+# # File agent.py
+ 
+# import asyncio
+# import json
+# from typing import Any
+ 
+# from dotenv import load_dotenv
+# from google.adk.agents.llm_agent import LlmAgent
+# from google.adk.artifacts.in_memory_artifact_service import (
+#     InMemoryArtifactService,  # Optional
+# )
+# from google.adk.runners import Runner
+# from google.adk.sessions import InMemorySessionService
+# from google.adk.tools.mcp_tool.mcp_toolset import (
+#     MCPToolset,
+#     SseServerParams,
+# )
+# from google.genai import types
+# from rich import print
+# load_dotenv()
+ 
+# async def get_tools_async():
+#     """Gets tools from the File System MCP Server."""
+#     tools, exit_stack = await MCPToolset.from_server(
+#         connection_params=SseServerParams(
+#             url="http://localhost:8001/sse",
+#         )
+#     )
+#     print("MCP Toolset created successfully.")
+#     return tools, exit_stack
+ 
+# async def get_agent_async():
+#     """Creates an ADK Agent equipped with tools from the MCP Server."""
+#     tools, exit_stack = await get_tools_async()
+#     print(f"Fetched {len(tools)} tools from MCP server.")
+#     root_agent = LlmAgent(
+#         model="gemini-2.0-flash",
+#         name="assistant",
+#         instruction="""Help user extract and summarize the article from wikipedia link.
+#         Use the following tools to extract wikipedia article:
+#         - extract_wikipedia_article
+ 
+#         Once you retrieve the article, always summarize it in a few sentences for the user.
+#         """,
+#         tools=tools,
+#     )
+#     return root_agent, exit_stack
+ 
+# root_agent = get_agent_async()
+ 
+# ==============
+ 
+# from adk.agent import Agent
+# from adk.mcp import MCPTool
+ 
+# # Define the external MCP server URL
+# MCP_SERVER_URL = "http://localhost:8000"  # Replace with your actual MCP server URL
+ 
+# # Create the agent
+# agent = Agent(
+#     name="UtilityAgent",
+#     description="An agent that provides weather updates and currency conversion using an external MCP server.",
+#     tools=[
+#         MCPTool(
+#             url=MCP_SERVER_URL,
+#             tools=["get_weather_info", "convert_currency"]
+#         )
+#     ]
+# )
+ 
+# # Run the agent
+# if __name__ == "__main__":
+#     agent.run()
+##Wrong code end
+
 import asyncio
 from fastmcp import Client
 from typing import Any
