@@ -3,6 +3,9 @@ import requests
 import json
 from typing import Any, Dict, List, Optional
 from google.adk.agents import SequentialAgent,ParallelAgent
+from dotenv import load_dotenv
+
+load_dotenv()
 
 #1. Basic Agent
 base_agent = Agent(
@@ -917,4 +920,86 @@ call_local_mcp_server_agent = LlmAgent(
     tools=[get_mcp_data],
 )
 
-root_agent=call_local_mcp_server_agent
+#root_agent=call_local_mcp_server_agent
+
+
+#calling MCPServer having integrated ADK agent
+
+import asyncio
+from fastmcp import Client
+from typing import Any
+from google.genai import types
+from dotenv import load_dotenv
+
+from google.adk.agents import LlmAgent
+from pydantic import BaseModel, Field
+
+from google.adk.agents import Agent
+from google.adk.events import Event
+from google.adk.runners import Runner
+from google.adk.sessions import InMemorySessionService
+
+async def get_mcp_data(object_id: str) -> dict:
+    """Fetches an object by its ID from the MCP server."""
+    print(f"Tool 'get_mcp_data' called with object_id: {object_id}")
+    # async with Client("restapi-mcp-server.py") as client:
+    #     single = await client.call_tool("get_object_by_id", {"object_id": object_id})
+    #     print("Fetched single:", single)
+    #     return single
+    async with Client("http://127.0.0.1:8001/mcp") as client:
+        single = await client.call_tool("get_objects_by_ids_using_adk_agent")
+        print("Fetched single:", single)
+        return single
+        
+call_local_mcp_adk_server_agent = LlmAgent(
+    model="gemini-2.0-flash",
+    name="assistant",
+    description="This agent is used to get data using FASTMCP client by calling the FASTMCP server ",
+    instruction="""Help user to fetch the data from the FASTMCP Server using FASTMCP Client.
+    When the user asks to fetch data for a specific object ID, use the `get_mcp_data` tool and pass the ID to it.
+    """,
+    tools=[get_mcp_data],
+)
+
+#root_agent=call_local_mcp_adk_server_agent
+
+
+#calling restapi-mcp-adk-server having integrated ADK agent
+
+import asyncio
+from fastmcp import Client
+from typing import Any
+from google.genai import types
+from dotenv import load_dotenv
+
+from google.adk.agents import LlmAgent
+from pydantic import BaseModel, Field
+
+from google.adk.agents import Agent
+from google.adk.events import Event
+from google.adk.runners import Runner
+from google.adk.sessions import InMemorySessionService
+
+async def get_mcp_adk_data(object_id: str) -> dict:
+    """Fetches an object by its ID from the MCP server."""
+    print(f"Tool 'get_mcp_data' called with object_id: {object_id}")
+    # async with Client("restapi-mcp-server.py") as client:
+    #     single = await client.call_tool("get_object_by_id", {"object_id": object_id})
+    #     print("Fetched single:", single)
+    #     return single
+    async with Client("restapi-mcp-adk-server.py") as client:
+        single = await client.call_tool("get_objects_by_id_using_adk_agent", {"object_id": object_id})
+        print("Fetched single:", single)
+        return single
+        
+call_local_mcp_adk_server_agent = LlmAgent(
+    model="gemini-2.0-flash",
+    name="assistant",
+    description="This agent is used to get data using FASTMCP client by calling the FASTMCP server ",
+    instruction="""Help user to fetch the data from the FASTMCP Server using FASTMCP Client.
+    When the user asks to fetch data for a specific object ID, use the `get_mcp_data` tool and pass the ID to it.
+    """,
+    tools=[get_mcp_adk_data],
+)
+
+root_agent=call_local_mcp_adk_server_agent
