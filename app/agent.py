@@ -951,7 +951,7 @@ async def get_mcp_data(object_id: str) -> dict:
         print("Fetched single:", single)
         return single
         
-call_local_mcp_adk_server_agent = LlmAgent(
+call_local_mcp_adk_remote_server_agent = LlmAgent(
     model="gemini-2.0-flash",
     name="assistant",
     description="This agent is used to get data using FASTMCP client by calling the FASTMCP server ",
@@ -961,7 +961,7 @@ call_local_mcp_adk_server_agent = LlmAgent(
     tools=[get_mcp_data],
 )
 
-#root_agent=call_local_mcp_adk_server_agent
+#root_agent=call_local_mcp_adk_remote_server_agent
 
 
 #calling restapi-mcp-adk-server having integrated ADK agent
@@ -997,7 +997,7 @@ call_local_mcp_adk_server_agent = LlmAgent(
     name="assistant",
     description="This agent is used to get data using FASTMCP client by calling the FASTMCP server ",
     instruction="""Help user to fetch the data from the FASTMCP Server using FASTMCP Client.
-    When the user asks to fetch data for a specific object ID, use the `get_mcp_data` tool and pass the ID to it.
+    When the user asks to fetch data for a specific object ID, use the `get_mcp_adk_data` tool and pass the ID to it.
     """,
     tools=[get_mcp_adk_data],
 )
